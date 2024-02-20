@@ -26,7 +26,7 @@ from set_config import *
 from exports import bom_to_parts
 import os
 import openscad
-from tests import do_cmd, update_image, colour_scheme, background, image_size
+from tests import do_cmd, update_image, colour_scheme, background, image_size, magickCmd
 from deps import mtime
 from colorama import init
 import json
@@ -96,7 +96,7 @@ def render(target, type):
             tmp_name = tmp_dir + '/' + part[:-4] + '.png'
             dummy_deps_name = tmp_dir + '/tmp.deps' # work around for OpenSCAD issue #3879
             openscad.run("-o", tmp_name, png_maker_name, colour_scheme, "--projection=p", image_size, cam, render, "--autocenter", "--viewall", "-d", dummy_deps_name)
-            do_cmd(("magick "+ tmp_name + " -trim -resize 280x280 -background %s -gravity Center -extent 280x280 -bordercolor %s -border 10 %s"
+            do_cmd((magickCmd + " "+ tmp_name + " -trim -resize 280x280 -background %s -gravity Center -extent 280x280 -bordercolor %s -border 10 %s"
                     % (background, background, tmp_name)).split())
             update_image(tmp_name, png_name)
             os.remove(png_maker_name)

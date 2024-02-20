@@ -40,8 +40,10 @@ image_size = "--imgsize=4096,4096"
 threshold = 20  # Image comparison allowed number of different pixels
 fuzz = 5       # Image comparison allowed percentage error in pixel value
 
-colour_scheme = "--colorscheme=Nature"
+colour_scheme = "--colorscheme=Tomorrow"
 background = "#F8F8F8"
+
+magickCmd="convert"
 
 def do_cmd(cmd, output = sys.stdout):
     for arg in cmd:
@@ -62,7 +64,7 @@ def compare_images(a, b, c):
         return -1
     log_name = 'magick.log'
     with open(log_name, 'w') as output:
-        do_cmd(("magick compare -metric AE -fuzz %d%% %s %s %s" % (fuzz, a, b, c)).split(), output = output)
+        do_cmd((magickCmd+" compare -metric AE -fuzz %d%% %s %s %s" % (fuzz, a, b, c)).split(), output = output)
     with open(log_name, 'r') as f:
         pixels = f.read().strip()
         pixels = int(float(pixels if pixels.isnumeric() else -1))
@@ -124,7 +126,7 @@ def tests(tests):
         lib_blurb = scrape_blurb(scad_name)
         if not os.path.isfile(png_name):
             openscad.run(scad_name, "-o", png_name, colour_scheme, "--projection=p", image_size, "--camera=0,0,0,50,0,340,500", "--autocenter", "--viewall");
-            do_cmd(["magick", png_name, "-trim", "-resize", "1280", "-bordercolor", background, "-border", "10", png_name])
+            do_cmd([magickCmd, png_name, "-trim", "-resize", "1280", "-bordercolor", background, "-border", "10", png_name])
     else:
         #
         # Project tests so just a title
@@ -246,7 +248,7 @@ def tests(tests):
                 tmp_name = tmp_dir + '/tmp.png'
                 openscad.run_list([scad_name, "-o", tmp_name] + options.list() + ["-D$bom=2", colour_scheme, "--projection=p", image_size, "--camera=0,0,0,70,0,315,500", "--autocenter", "--viewall", "-d", dname]);
                 times.add_time(scad_name, t)
-                do_cmd(["magick", tmp_name, "-trim", "-resize", "1000x600", "-bordercolor", background, "-border", "10", tmp_name])
+                do_cmd([magickCmd, tmp_name, "-trim", "-resize", "1000x600", "-bordercolor", background, "-border", "10", tmp_name])
                 update_image(tmp_name, png_name)
                 BOM = bom.parse_bom()
                 with open(bom_name, 'wt') as outfile:

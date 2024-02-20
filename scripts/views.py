@@ -25,7 +25,7 @@
 from __future__ import print_function
 from set_config import *
 import openscad
-from tests import do_cmd, update_image, colour_scheme, background, image_size
+from tests import do_cmd, update_image, colour_scheme, background, image_size, magickCmd
 import time
 import times
 import options
@@ -225,12 +225,12 @@ def views(target, do_assemblies = None):
                                                 view_def = ['--viewall', '--autocenter'] if not (zoomed & (1 << explode)) else ['--camera=0,0,0,55,0,25,140']
                                                 openscad.run_list(["-o", tmp_name, png_maker_name] + options.list() + target_def + cwd_def + view_def + ["-D$pose=1", "-D$explode=%d" % explode, colour_scheme, "--projection=p", image_size, "-d", dname]);
                                                 times.add_time(png_name, t)
-                                                do_cmd(["magick", tmp_name, "-trim", "-resize", "1004x1004", "-bordercolor", background, "-border", "10", tmp_name])
+                                                do_cmd([magickCmd, tmp_name, "-trim", "-resize", "1004x1004", "-bordercolor", background, "-border", "10", tmp_name])
                                                 update_image(tmp_name, png_name)
                                                 os.remove(png_maker_name)
                                             tn_name = png_name.replace('.png', '_tn.png')
                                             if mtime(png_name) > mtime(tn_name):
-                                                do_cmd(("magick "+ png_name + " -trim -resize 280x280 -background " + background + " -gravity Center -extent 280x280 -bordercolor " + background + " -border 10 " + tmp_name).split())
+                                                do_cmd((magickCmd + " "+ png_name + " -trim -resize 280x280 -background " + background + " -gravity Center -extent 280x280 -bordercolor " + background + " -border 10 " + tmp_name).split())
                                                 update_image(tmp_name, tn_name)
                                     done_assemblies.append(real_name)
                                 else:
